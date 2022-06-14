@@ -165,6 +165,15 @@ lua require("nvim-lsp-installer").setup {}
 "  CCLS
 "  ----------------------------------
 lua require('lspconfig')['ccls'].setup({})
+"  pyright
+"  ----------------------------------
+lua require('lspconfig')['pyright'].setup({})
+"  jsonls
+"  ----------------------------------
+lua require('lspconfig')['jsonls'].setup({})
+"  bashls
+"  ----------------------------------
+lua require('lspconfig')['bashls'].setup({})
 
 "
 " Configure Rust LSP.
