@@ -42,7 +42,6 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \| PlugInstall --sync | source $MYVIMRC
 \| endif
 
-" Plugins
 call plug#begin()
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -70,6 +69,10 @@ Plug 'williamboman/nvim-lsp-installer'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+
+Plug 'prabirshrestha/vim-lsp'
+Plug 'Shougo/deoplete.nvim'
+Plug 'lighttiger2505/deoplete-vim-lsp'
 
 call plug#end()
 "Enable deoplete at startup
@@ -155,6 +158,15 @@ lua require("trouble").setup()
 " Neovim LSP
 " ------------------------------------
 "
+"  lsp installer
+"  ----------------------------------
+lua require("nvim-lsp-installer").setup {}
+"
+"  CCLS
+"  ----------------------------------
+lua require('lspconfig')['ccls'].setup({})
+
+"
 " Configure Rust LSP.
 "
 " https://github.com/simrat39/rust-tools.nvim#configuration
@@ -162,7 +174,7 @@ lua require("trouble").setup()
 lua require'lspconfig'.rust_analyzer.setup({})
 
 lua <<EOF
-local nvim_lsp = require'lspconfig'
+local nvim_lsp = require('lspconfig')
 local opts = {
   -- rust-tools options
   tools = {
