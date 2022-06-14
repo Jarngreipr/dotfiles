@@ -26,6 +26,8 @@ rm -rf rust-analyzer
 
 # LSD install
 cargo install lsd
+cargo install ripgrep
+cargo install fd-find
 
 
 # Install Plug

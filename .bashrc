@@ -154,13 +154,14 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # Causes some build errors?
 # export RUSTC_WRAPPER="sccache"
-# export SOURCE_DIR="/home/valka/machine"
-# export MACHINE_BUILD_DIR="$SOURCE_DIR/build"
-# export EXTERNAL_BUILD_DIR="$SOURCE_DIR/external/build"
-# export CARGO_TARGET_DIR="$MACHINE_BUILD_DIR/rbuild"
-# export PKG_CONFIG_PATH="$EXTERNAL_BUILD_DIR"
+export SOURCE_DIR="/home/gudjon/valka/machine"
+export MACHINE_BUILD_DIR="$SOURCE_DIR/build"
+export EXTERNAL_BUILD_DIR="$SOURCE_DIR/external/build"
+export CARGO_TARGET_DIR="$SOURCE_DIR/rbuild"
+export PKG_CONFIG_PATH="$EXTERNAL_BUILD_DIR"
 
-# export CARGO_TARGET_DIR="$HOME/rbuild"
+ #export CARGO_TARGET_DIR="$HOME/rbuild"
+
 
 
 # Hack for tmux
