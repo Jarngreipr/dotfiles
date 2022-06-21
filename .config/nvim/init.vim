@@ -29,18 +29,18 @@ set shortmess+=c
 set ignorecase
 set smartcase
 
-let $MYVIMRC="$HOME/.config/nvim/init.vim"
+let g:nvim_config_root = stdpath('config')
+let g:vimrc = g:nvim_config_root . '/init.vim'
+let $MYVIMRC = g:vimrc
+let g:plugged = stdpath('data').'/plugged'
+let g:plug_path = stdpath('data') . '/site/autoload/plug.vim'
 
-" Install vim-plug if not found
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+" Install vim-plug
+if empty(glob(g:plug_path))
+  silent !curl -fLo g:plug_path --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source g:vimrc
 endif
-
-" Run PlugInstall if there are missing plugins
-autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-  \| PlugInstall --sync | source $MYVIMRC
-\| endif
 
 call plug#begin()
 Plug 'tpope/vim-commentary'
@@ -74,6 +74,8 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'Shougo/deoplete.nvim'
 Plug 'lighttiger2505/deoplete-vim-lsp'
 
+Plug 'github/copilot.vim'
+
 call plug#end()
 "Enable deoplete at startup
 " let g:deoplete#enable_at_startup = 1
@@ -82,6 +84,8 @@ let g:solarized_visibility = "high"
 let g:solarized_contrast = "high"
 let g:solarized_termcolors = 256
 colorscheme gruvbox
+
+lua require('init')
 
 
 inoremap jk <Esc>
@@ -182,78 +186,6 @@ lua require('lspconfig')['bashls'].setup({})
 "
 lua require'lspconfig'.rust_analyzer.setup({})
 
-lua <<EOF
-local nvim_lsp = require('lspconfig')
-local opts = {
-  -- rust-tools options
-  tools = {
-    autoSetHints = true,
-    hover_with_actions = true,
-    inlay_hints = {
-      show_parameter_hints = true,
-      parameter_hints_prefix = "",
-      other_hints_prefix = "",
-      },
-    },
-  -- all the opts to send to nvim-lspconfig
-  -- these override the defaults set by rust-tools.nvim
-  -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-  -- https://rust-analyzer.github.io/manual.html#features
-  server = {
-    settings = {
-      ["rust-analyzer"] = {
-        assist = {
-          importEnforceGranularity = true,
-          importPrefix = "crate"
-          },
-        cargo = {
-          allFeatures = true
-          },
-        checkOnSave = {
-          -- default: `cargo check`
-          command = "clippy"
-          },
-        },
-        inlayHints = {
-          lifetimeElisionHints = {
-            enable = true,
-            useParameterNames = true
-          },
-        },
-      }
-    },
-}
-require('rust-tools').setup(opts)
-EOF
-" Configure Golang LSP.
-"
-" https://github.com/golang/tools/blob/master/gopls/doc/settings.md
-" https://github.com/golang/tools/blob/master/gopls/doc/analyzers.md
-" https://github.com/golang/tools/blob/master/gopls/doc/vim.md#neovim
-" https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#gopls
-" https://github.com/golang/tools/blob/master/gopls/doc/vim.md#neovim
-" https://www.getman.io/posts/programming-go-in-neovim/
-"
-lua <<EOF
-require('lspconfig').gopls.setup{
-	cmd = {'gopls'},
-  settings = {
-    gopls = {
-      analyses = {
-        nilness = true,
-        unusedparams = true,
-        unusedwrite = true,
-        useany = true,
-      },
-      experimentalPostfixCompletions = true,
-      gofumpt = true,
-      staticcheck = true,
-      usePlaceholders = true,
-    },
-  },
-	on_attach = on_attach,
-}
-EOF
 " Configure Golang Environment.
 "
 fun! GoFumpt()
@@ -309,59 +241,6 @@ nnoremap <silent> ]s        <cmd>lua vim.diagnostic.show()<CR>
 " nnoremap <silent> <space>q  <cmd>lua vim.diagnostic.setloclist()<CR>
 "
 nnoremap <silent> <space>q  <cmd>Trouble<CR>
-" Setup Completion
-" https://github.com/hrsh7th/nvim-cmp#recommended-configuration
-"
-lua <<EOF
-local cmp = require('cmp')
-cmp.setup({
-  snippet = {
-    expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-  mapping = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    ['<Tab>'] = cmp.mapping.select_next_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-    ['<C-e>'] = cmp.mapping.close(),
-    ['<CR>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Insert,
-      select = true,
-    })
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' },
-    { name = 'path' },
-    { name = 'buffer' },
-    { name = 'nvim_lsp_signature_help' },
-  },
-})
-EOF
-" Setup Treesitter and friends
-"
-" NOTE: originally used `ensure_installed = "all"` but an experimental PHP
-" parser was causing NPM lockfile errors.
-"
-lua <<EOF
-require('nvim-treesitter.configs').setup {
-  ensure_installed = { "bash", "c", "cmake", "css", "dockerfile", "go", "gomod", "gowork", "hcl", "help", "html", "http", "javascript", "json", "lua", "make", "markdown", "python", "regex", "ruby", "rust", "toml", "vim", "yaml", "zig" },
-  highlight = {
-    enable = true,
-  },
-  rainbow = {
-    enable = true,
-    extended_mode = true,
-    max_file_lines = nil,
-  }
-}
-require('hlargs').setup()
-EOF
 
 "lua require'nvim-tree'.setup {}
 
