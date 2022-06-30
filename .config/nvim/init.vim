@@ -50,20 +50,21 @@ Plug 'tpope/vim-vinegar'
 Plug 'morhetz/gruvbox'
 
 Plug 'folke/trouble.nvim'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
+" Plug 'hrsh7th/cmp-buffer'
+" Plug 'hrsh7th/cmp-nvim-lsp'
+" Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+" Plug 'hrsh7th/cmp-path'
+" Plug 'hrsh7th/cmp-vsnip'
+" Plug 'hrsh7th/nvim-cmp'
+" Plug 'hrsh7th/vim-vsnip'
+" Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'j-hui/fidget.nvim'
 Plug 'kosayoda/nvim-lightbulb'
 Plug 'm-demare/hlargs.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'simrat39/rust-tools.nvim'
+Plug 'rust-lang/rust.vim'
 Plug 'weilbith/nvim-code-action-menu'
 Plug 'williamboman/nvim-lsp-installer'
 
@@ -71,8 +72,8 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'prabirshrestha/vim-lsp'
-Plug 'Shougo/deoplete.nvim'
-Plug 'lighttiger2505/deoplete-vim-lsp'
+" Plug 'Shougo/deoplete.nvim'
+" Plug 'lighttiger2505/deoplete-vim-lsp'
 
 Plug 'github/copilot.vim'
 
@@ -85,8 +86,8 @@ let g:solarized_contrast = "high"
 let g:solarized_termcolors = 256
 colorscheme gruvbox
 
-lua require('init')
-
+let $lua_init = resolve(g:nvim_config_root . '/lua/init.lua')
+source $lua_init
 
 inoremap jk <Esc>
 " Uppercase whole word in insert mode
@@ -242,5 +243,7 @@ nnoremap <silent> ]s        <cmd>lua vim.diagnostic.show()<CR>
 "
 nnoremap <silent> <space>q  <cmd>Trouble<CR>
 
-"lua require'nvim-tree'.setup {}
-
+" Copilot mappings
+"imap <silent<script><expr> <S-j> copilot#Accept("\<CR>")
+"let g:copilot_no_tab_map = v:true
+lua vim.g.copilot_assume_mapped = true
